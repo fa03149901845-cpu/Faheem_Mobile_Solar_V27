@@ -51,6 +51,27 @@ footer{background:#f1faf6;padding:36px 5% 0}.footgrid{max-width:1320px;margin:au
 .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.profile-grid input{width:100%;padding:11px;border:1px solid #ccd8d5;border-radius:9px}.profile-box{background:#f8fbfa;border:1px solid #e1e8e5;border-radius:12px;padding:14px;margin-top:12px}.upload-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.upload-row input[type=file]{max-width:100%}@media(max-width:560px){.profile-grid{grid-template-columns:1fr}}
 </style></head>
 <body>
+<div class="admin-overlay" id="supabaseConfigOverlay">
+  <div class="admin-panel" style="max-width:560px">
+    <div class="admin-top">
+      <div><h2 style="margin:0">Supabase Backend</h2><small>Connect this V27 site to your Supabase project.</small></div>
+      <button class="admin-close" onclick="closeSupabaseConfig()">Close</button>
+    </div>
+    <div class="admin-box">
+      <label style="display:block;margin-bottom:6px;font-weight:700">Project URL</label>
+      <input id="supabaseUrlInput" type="url" placeholder="https://your-project.supabase.co" style="width:100%;box-sizing:border-box;margin-bottom:12px">
+      <label style="display:block;margin-bottom:6px;font-weight:700">Publishable / Public key</label>
+      <input id="supabaseKeyInput" type="text" placeholder="sb_publishable_..." style="width:100%;box-sizing:border-box;margin-bottom:12px">
+      <p style="font-size:12px;color:#666;margin:0 0 12px">Use only the Publishable/Public key. Never enter a Supabase Secret or service_role key here.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" onclick="saveSupabaseConfig()">Save & Connect</button>
+        <button class="admin-close" type="button" onclick="closeSupabaseConfig()">Cancel</button>
+      </div>
+      <div id="supabaseConfigMsg" style="margin-top:10px;font-size:12px"></div>
+    </div>
+  </div>
+</div>
+
 <div class="top"><span>◉ Welcome to Faheem Mobile and Solar Electronics</span><span>🚚 Fast Delivery Across Pakistan &nbsp; | &nbsp; ☎ Help & Support</span></div>
 <header class="header">
   <a class="logo" href="#"><div class="logo-mark">FM</div><div><b>FAHEEM</b><span>Mobile and Solar Electronics</span></div></a>
@@ -567,13 +588,22 @@ let FME_SUPABASE_ANON_KEY = localStorage.getItem('fme_supabase_anon_key') || 'YO
 let fme = null;
 function isSupabaseConfigured(){return !!(window.supabase && /^https:\/\/[^\s]+$/.test(FME_SUPABASE_URL) && !FME_SUPABASE_URL.includes('YOUR-PROJECT') && !FME_SUPABASE_ANON_KEY.includes('YOUR-SUPABASE'));}
 function configureSupabase(){
-  const url=prompt('Supabase Project URL:', FME_SUPABASE_URL.includes('YOUR-PROJECT')?'':FME_SUPABASE_URL);
-  if(url===null)return;
-  const key=prompt('Supabase Public/Anon/Publishable Key (NOT service_role):', FME_SUPABASE_ANON_KEY.includes('YOUR-SUPABASE')?'':FME_SUPABASE_ANON_KEY);
-  if(key===null)return;
-  if(!/^https:\/\/[^\s]+$/.test(url.trim()) || !key.trim()){showToast('Invalid Supabase URL or public key');return;}
-  localStorage.setItem('fme_supabase_url',url.trim());
-  localStorage.setItem('fme_supabase_anon_key',key.trim());
+  const o=document.getElementById('supabaseConfigOverlay');
+  if(!o)return;
+  document.getElementById('supabaseUrlInput').value=FME_SUPABASE_URL.includes('YOUR-PROJECT')?'':FME_SUPABASE_URL;
+  document.getElementById('supabaseKeyInput').value=FME_SUPABASE_ANON_KEY.includes('YOUR-SUPABASE')?'':FME_SUPABASE_ANON_KEY;
+  const m=document.getElementById('supabaseConfigMsg'); if(m)m.textContent='';
+  o.style.display='flex';
+}
+function closeSupabaseConfig(){const o=document.getElementById('supabaseConfigOverlay');if(o)o.style.display='none';}
+function saveSupabaseConfig(){
+  const url=(document.getElementById('supabaseUrlInput')?.value||'').trim();
+  const key=(document.getElementById('supabaseKeyInput')?.value||'').trim();
+  const m=document.getElementById('supabaseConfigMsg');
+  if(!/^https:\/\/[^\s]+$/.test(url) || !key){if(m){m.textContent='Please enter a valid Project URL and Publishable/Public key.';m.style.color='#b22';}return;}
+  localStorage.setItem('fme_supabase_url',url);
+  localStorage.setItem('fme_supabase_anon_key',key);
+  closeSupabaseConfig();
   location.reload();
 }
 function clearSupabaseConfig(){localStorage.removeItem('fme_supabase_url');localStorage.removeItem('fme_supabase_anon_key');location.reload();}
