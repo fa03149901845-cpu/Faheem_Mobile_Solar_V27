@@ -51,3 +51,7 @@ Live provider calls remain disabled until all are true:
 
 ## 5. Rollback
 Keep the previous ZIP release. If a provider integration fails, disable its adapter/secrets and keep COD/manual bank-transfer ordering active.
+
+
+## V27 Admin Access Fix
+If Admin Panel shows `Admin access required`, the signed-in Supabase account must have `profiles.role = 'admin'`. Use the included `ADMIN_SETUP.sql` in Supabase SQL Editor, replace `YOUR_ADMIN_EMAIL` with the exact login email, run it, then refresh/login again. Do not share the Supabase secret/service-role key.

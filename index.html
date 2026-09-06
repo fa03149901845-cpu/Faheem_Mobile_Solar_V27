@@ -294,8 +294,24 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
   document.getElementById('headerCart')?.addEventListener('click',openCart);
+  document.getElementById('accountOpen')?.addEventListener('click',()=>{ if(!fme){openAuth();authMsg('Please configure Supabase first.');return} openAuth(); });
   renderCart();
+  const navActions={
+    'Home':()=>window.scrollTo({top:0,behavior:'smooth'}),
+    'Solar Products':()=>filterCatalogByCategory('solar-panels'),
+    'Mobile Accessories':()=>filterCatalogByCategory('mobile'),
+    'Electronics':()=>filterCatalogByCategory('other'),
+    'Special Offers':()=>document.getElementById('offersSection')?.scrollIntoView({behavior:'smooth'}),
+    'Contact Us':()=>document.getElementById('contactSection')?.scrollIntoView({behavior:'smooth'})
+  };
+  document.querySelectorAll('.nav a:not(.wa)').forEach(a=>{const action=navActions[a.textContent.trim()];if(action){a.href='javascript:void(0)';a.addEventListener('click',e=>{e.preventDefault();action()})}});
+  document.querySelectorAll('.cat .smallbtn').forEach((a,i)=>{a.href='javascript:void(0)';a.addEventListener('click',e=>{e.preventDefault();filterCatalogByCategory(['solar-panels','mobile','other'][i]||'all')})});
+  document.querySelector('.nav .all')?.addEventListener('click',()=>filterCatalogByCategory('all'));
 });
+function filterCatalogByCategory(category){
+  const select=document.getElementById('catalogCategory');
+  if(select){select.value=category;select.dispatchEvent(new Event('change'));document.getElementById('dynamicProductGrid')?.scrollIntoView({behavior:'smooth',block:'start'});}
+}
 
 const defaultAdminProducts = [
   {name:'Longi 550W Solar Panel Mono PERC',price:24999,category:'Solar'},
@@ -580,10 +596,34 @@ async function submitAuth(e){e.preventDefault();if(!fme){authMsg('Backend is not
 }
 async function secureLogout(){if(fme) await fme.auth.signOut();fmeUser=null;fmeIsAdmin=false;refreshAuthUI();closeAuth();showToast('Logged out ✓')}
 async function loadFmeProfile(){if(!fme||!fmeUser)return;const {data,error}=await fme.from('profiles').select('role,full_name,phone,city,area,address').eq('id',fmeUser.id).maybeSingle();if(error){showToast('Profile load failed: '+error.message);return}fmeIsAdmin=data?.role==='admin';document.getElementById('adminOpen').textContent=fmeIsAdmin?'Admin Panel':'Admin Login';const vals={profileName:data?.full_name||'',profilePhone:data?.phone||'',profileCity:data?.city||'',profileArea:data?.area||'',profileAddress:data?.address||''};Object.entries(vals).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.value=v});const checkout={customerName:data?.full_name||'',customerPhone:data?.phone||'',customerCity:data?.city||'',customerArea:data?.area||'',customerAddress:data?.address||''};Object.entries(checkout).forEach(([id,v])=>{const e=document.getElementById(id);if(e&&v&&!e.value)e.value=v})}
+async function openNotifications(){
+  const overlay=document.getElementById('notificationOverlay'), list=document.getElementById('notificationList');
+  if(!fme){openAuth();authMsg('Please configure Supabase first to use Notifications.');return}
+  if(!fmeUser){openAuth();authMsg('Please login to view your notifications.');return}
+  overlay.style.display='block';
+  list.innerHTML='<div class=\"admin-box\">Loading notifications…</div>';
+  const {data,error}=await fme.from('notifications').select('id,title,message,read_at,created_at,order_id').eq('user_id',fmeUser.id).order('created_at',{ascending:false}).limit(100);
+  if(error){list.innerHTML='<div class=\"admin-box\"><b>Could not load notifications</b><br><small>'+escapeHtml(error.message)+'</small></div>';return}
+  const rows=data||[];
+  list.innerHTML=rows.length?rows.map(n=>`<div class=\"admin-box\" style=\"margin-top:10px;${n.read_at?'opacity:.72':'border-left:4px solid #087d47'}\"><div style=\"display:flex;justify-content:space-between;gap:10px\"><b>${escapeHtml(n.title)}</b><small>${new Date(n.created_at).toLocaleString('en-PK')}</small></div><p style=\"margin:8px 0 0\">${escapeHtml(n.message)}</p>${!n.read_at?`<button class=\"admin-close\" style=\"margin-top:8px\" onclick=\"markNotificationRead('${n.id}')\">Mark as read</button>`:''}</div>`).join(''):'<div class=\"admin-box\">No notifications yet.</div>';
+}
+async function markNotificationRead(id){
+  if(!fme||!fmeUser)return;
+  const {error}=await fme.from('notifications').update({read_at:new Date().toISOString()}).eq('id',id).eq('user_id',fmeUser.id);
+  if(error){showToast('Could not update notification: '+error.message);return}
+  await openNotifications();
+}
+async function markAllNotificationsRead(){
+  if(!fme||!fmeUser)return;
+  const {error}=await fme.from('notifications').update({read_at:new Date().toISOString()}).eq('user_id',fmeUser.id).is('read_at',null);
+  if(error){showToast('Could not update notifications: '+error.message);return}
+  await openNotifications();
+}
+
 async function bootFme(){if(!fme){setBackendStatus('Offline demo');document.getElementById('backendConfig')?.setAttribute('title','Configure Supabase');return}setBackendStatus('Connecting…');const {data,error}=await fme.auth.getSession();if(error){setBackendStatus('Backend error');showToast(error.message);return}fmeUser=data.session?.user||null;if(fmeUser)await loadFmeProfile();await loadStoreSettings();setBackendStatus('Supabase connected',true);document.getElementById('backendConfig')?.setAttribute('title','Supabase connected — tap to change');fme.auth.onAuthStateChange(async(_event,session)=>{fmeUser=session?.user||null;fmeIsAdmin=false;if(fmeUser)await loadFmeProfile();refreshAuthUI();});}
 async function loadProductsOnline(){if(!fme)return;const {data,error}=await fme.from('products').select('*').eq('active',true).order('created_at',{ascending:false});if(error){setBackendStatus('Database error');showToast('Products could not load: '+error.message);return}if(Array.isArray(data)){dbProducts=data;window.dbProducts=data;prices={...prices,...Object.fromEntries(data.map(p=>[p.name,Number(p.price)]))};localStorage.setItem('fme_products',JSON.stringify(data));renderOnlineCatalog(data);renderCart()}}
 function renderOnlineCatalog(products){const grid=document.getElementById('dynamicProductGrid');if(!grid)return;const q=(document.getElementById('catalogSearch')?.value||'').toLowerCase(),cat=document.getElementById('catalogCategory')?.value||'all';const list=products.filter(p=>(!q||(p.name||'').toLowerCase().includes(q)||(p.description||'').toLowerCase().includes(q))&&(cat==='all'||p.category===cat));grid.innerHTML=list.map(p=>`<article style="border:1px solid #e8e8e8;border-radius:14px;padding:12px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.05)">${p.image?`<img src="${escapeHtml(p.image)}" style="width:100%;height:170px;object-fit:contain;border-radius:10px;background:#f7f7f7">`:`<div style="height:170px;display:grid;place-items:center;background:#f7f7f7;border-radius:10px;font-size:52px">☀️</div>`}<div style="padding:10px 2px"><div style="font-size:12px;color:#777;text-transform:capitalize">${escapeHtml((p.category||'other').replaceAll('-',' '))}</div><h3 style="margin:5px 0 8px;font-size:17px">${escapeHtml(p.name)}</h3><div style="font-weight:800;font-size:18px;margin-bottom:10px">${money(p.price)}${Number.isFinite(Number(p.stock))?`<div style="font-size:12px;color:${Number(p.stock)>0?"#087d47":"#b22"};margin-bottom:8px">${Number(p.stock)>0?`Stock: ${Number(p.stock)}`:"Out of stock"}</div>`:""}<button onclick="addProduct('${String(p.id).replaceAll("'","\\'")}')" style="width:100%;padding:10px;border:0;border-radius:8px;cursor:pointer;background:#0b9e56;color:#fff;font-weight:800" ${Number.isFinite(Number(p.stock))&&Number(p.stock)<=0?"disabled":""}>${Number.isFinite(Number(p.stock))&&Number(p.stock)<=0?"Out of Stock":"Add to Cart"}</button></div></article>`).join('')||'<div style="grid-column:1/-1;text-align:center;padding:35px;color:#777">No products found.</div>'}
-async function openSecureAdmin(){if(!fme){openAuth();showAuthMode('login');authMsg('Secure online Admin requires Supabase configuration in this V8 build.');return}if(!fmeUser){openAuth();showAuthMode('login');authMsg('Admin login required.');return}await loadFmeProfile();if(!fmeIsAdmin){openAuth();authMsg('This account is not an admin.');return}closeAuth();document.getElementById('adminOverlay').style.display='block';adminRenderSecure()}
+async function openSecureAdmin(){if(!fme){openAuth();showAuthMode('login');authMsg('Secure online Admin requires Supabase configuration in this V8 build.');return}if(!fmeUser){openAuth();showAuthMode('login');authMsg('Admin login required.');return}await loadFmeProfile();if(!fmeIsAdmin){openAuth();showAuthMode('login');authMsg('This account is not an admin yet. In Supabase SQL Editor, run the Admin Setup SQL from ADMIN_SETUP.sql using the email of your admin account, then log in again.');return}closeAuth();document.getElementById('adminOverlay').style.display='block';adminRenderSecure()}
 async function adminRenderSecure(){if(!fme)return;const {data,error}=await fme.from('products').select('*').order('created_at',{ascending:false});if(error){showToast(error.message);return}const box=document.getElementById('adminProducts');document.getElementById('adminProductCount').textContent=data.length;await renderAdminStats();document.getElementById('adminProducts').innerHTML=data.map(p=>`<div class="admin-product"><div><b>${escapeHtml(p.name)}</b><br><small>${escapeHtml(p.category)} · ${money(p.price)} · Stock: ${Number(p.stock||0)} · ${p.active?'Active':'Hidden'}</small></div><div><button onclick="secureEditProduct('${p.id}')">Edit</button><button onclick="secureDeleteProduct('${p.id}')">Delete</button></div></div>`).join('');}
 async function renderAdminStats(){
   if(!fme)return;
