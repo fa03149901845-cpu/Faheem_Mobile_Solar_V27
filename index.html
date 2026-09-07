@@ -49,38 +49,33 @@ footer{background:#f1faf6;padding:36px 5% 0}.footgrid{max-width:1320px;margin:au
 <style>
 .auth-modal{display:none;position:fixed;inset:0;background:#0008;z-index:3000;align-items:center;justify-content:center;padding:18px}.auth-box{background:#fff;width:min(460px,96%);border-radius:18px;padding:24px;box-shadow:0 20px 60px #0005}.auth-box h2{margin:0 0 6px}.auth-box p{color:#66767a;font-size:13px}.auth-box input{width:100%;padding:12px;border:1px solid #ccd8d5;border-radius:9px;margin:6px 0 12px}.auth-tabs{display:flex;gap:8px;margin:15px 0}.auth-tabs button{flex:1;padding:10px;border:1px solid #ccd8d5;border-radius:8px;background:#f6faf8;font-weight:800;cursor:pointer}.auth-tabs .active{background:#0b9e56;color:#fff}.auth-msg{font-size:12px;margin-top:10px;min-height:18px}.account-state{padding:14px;background:#f5faf8;border-radius:10px;margin:12px 0}.danger{background:#fff1f1;color:#b22;border:1px solid #e7bcbc}
 .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.profile-grid input{width:100%;padding:11px;border:1px solid #ccd8d5;border-radius:9px}.profile-box{background:#f8fbfa;border:1px solid #e1e8e5;border-radius:12px;padding:14px;margin-top:12px}.upload-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.upload-row input[type=file]{max-width:100%}@media(max-width:560px){.profile-grid{grid-template-columns:1fr}}
-</style></head>
+</style>
+<style>
+html,body{max-width:100%;overflow-x:hidden}
+.header{flex-wrap:wrap}
+.actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;max-width:100%}
+.nav{overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
+.nav a,.nav .all{flex:0 0 auto}
+@media(max-width:700px){
+  .header{padding:12px 4%;gap:10px}
+  .search{order:3;width:100%}
+  .search input{min-width:0;width:100%}
+  .actions{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}
+  .actions>*{flex:0 0 auto}
+  #dynamicCatalog{padding-left:4%!important;padding-right:4%!important}
+  #dynamicCatalog>div:first-child{align-items:stretch!important}
+  #catalogSearch,#catalogCategory{width:100%;box-sizing:border-box}
+}
+</style>
+</head>
 <body>
-<div class="admin-overlay" id="supabaseConfigOverlay">
-  <div class="admin-panel" style="max-width:560px">
-    <div class="admin-top">
-      <div><h2 style="margin:0">Supabase Backend</h2><small>Connect this V27 site to your Supabase project.</small></div>
-      <button class="admin-close" onclick="closeSupabaseConfig()">Close</button>
-    </div>
-    <div class="admin-box">
-      <label style="display:block;margin-bottom:6px;font-weight:700">Project URL</label>
-      <input id="supabaseUrlInput" type="url" placeholder="https://your-project.supabase.co" style="width:100%;box-sizing:border-box;margin-bottom:12px">
-      <label style="display:block;margin-bottom:6px;font-weight:700">Publishable / Public key</label>
-      <input id="supabaseKeyInput" type="text" placeholder="sb_publishable_..." style="width:100%;box-sizing:border-box;margin-bottom:12px">
-      <p style="font-size:12px;color:#666;margin:0 0 12px">Use only the Publishable/Public key. Never enter a Supabase Secret or service_role key here.</p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn" onclick="saveSupabaseConfig()">Save & Connect</button>
-        <button class="admin-close" type="button" onclick="closeSupabaseConfig()">Cancel</button>
-      </div>
-      <div id="supabaseConfigMsg" style="margin-top:10px;font-size:12px"></div>
-    </div>
-  </div>
-</div>
-
 <div class="top"><span>◉ Welcome to Faheem Mobile and Solar Electronics</span><span>🚚 Fast Delivery Across Pakistan &nbsp; | &nbsp; ☎ Help & Support</span></div>
 <header class="header">
   <a class="logo" href="#"><div class="logo-mark">FM</div><div><b>FAHEEM</b><span>Mobile and Solar Electronics</span></div></a>
   <div class="search"><input placeholder="Search for products..."><select><option>All Categories</option><option>Solar Products</option><option>Mobile Accessories</option><option>Electronics</option></select><button>⌕</button></div>
-  <div class="actions"><button id="backendConfig" class="admin-btn" style="font-size:11px" onclick="configureSupabase()">⚙ Backend</button><span id="backendStatus" style="font-size:11px;color:#777;margin-right:6px">● Offline demo</span><button class="admin-btn" id="adminOpen">Admin Login</button><button class="admin-btn" id="ordersOpen">Orders</button><button class="admin-btn" onclick="openOrderTracker()">Track Order</button><button class="admin-btn" id="notificationsOpen" onclick="openNotifications()">🔔 Notifications</button><button class="action" id="accountOpen" style="border:0;background:transparent;cursor:pointer">♙<strong id="accountLabel">My Account</strong></button><div class="action" id="headerCart" style="cursor:pointer">🛒<strong>Cart · Rs. 0</strong></div></div>
+  <div class="actions"><button id="backendConfig" class="admin-btn" style="font-size:11px" onclick="configureSupabase()">⚙ Backend</button><span id="backendStatus" style="font-size:11px;color:#777;margin-right:6px">● Checking backend…</span><button class="admin-btn" id="adminOpen">Admin Login</button><button class="admin-btn" id="ordersOpen">Orders</button><button class="admin-btn" onclick="openOrderTracker()">Track Order</button><button class="admin-btn" id="notificationsOpen" onclick="openNotifications()">🔔 Notifications</button><button class="action" id="accountOpen" style="border:0;background:transparent;cursor:pointer">♙<strong id="accountLabel">My Account</strong></button><div class="action" id="headerCart" style="cursor:pointer">🛒<strong>Cart · Rs. 0</strong></div></div>
 </header>
 <nav class="nav"><span class="all">☰ &nbsp; All Categories</span><a href="#">Home</a><a href="#">Solar Products</a><a href="#">Mobile Accessories</a><a href="#">Electronics</a>
-
-<a href="#">Special Offers</a><a href="#">Contact Us</a><a class="wa" href="https://wa.me/923001234567">◉ WhatsApp Order</a></nav>
 <section id="dynamicCatalog" style="padding:28px 5%;background:#fff;">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;">
     <div>
@@ -103,6 +98,7 @@ footer{background:#f1faf6;padding:36px 5% 0}.footgrid{max-width:1320px;margin:au
   </div>
   <div id="dynamicProductGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;"></div>
 </section>
+<a href="#">Special Offers</a><a href="#">Contact Us</a><a class="wa" href="https://wa.me/923001234567">◉ WhatsApp Order</a></nav>
 
 <main>
 <section class="hero">
@@ -316,24 +312,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
   document.getElementById('headerCart')?.addEventListener('click',openCart);
-  document.getElementById('accountOpen')?.addEventListener('click',()=>{ if(!fme){openAuth();authMsg('Please configure Supabase first.');return} openAuth(); });
   renderCart();
-  const navActions={
-    'Home':()=>window.scrollTo({top:0,behavior:'smooth'}),
-    'Solar Products':()=>filterCatalogByCategory('solar-panels'),
-    'Mobile Accessories':()=>filterCatalogByCategory('mobile'),
-    'Electronics':()=>filterCatalogByCategory('other'),
-    'Special Offers':()=>document.getElementById('offersSection')?.scrollIntoView({behavior:'smooth'}),
-    'Contact Us':()=>document.getElementById('contactSection')?.scrollIntoView({behavior:'smooth'})
-  };
-  document.querySelectorAll('.nav a:not(.wa)').forEach(a=>{const action=navActions[a.textContent.trim()];if(action){a.href='javascript:void(0)';a.addEventListener('click',e=>{e.preventDefault();action()})}});
-  document.querySelectorAll('.cat .smallbtn').forEach((a,i)=>{a.href='javascript:void(0)';a.addEventListener('click',e=>{e.preventDefault();filterCatalogByCategory(['solar-panels','mobile','other'][i]||'all')})});
-  document.querySelector('.nav .all')?.addEventListener('click',()=>filterCatalogByCategory('all'));
 });
-function filterCatalogByCategory(category){
-  const select=document.getElementById('catalogCategory');
-  if(select){select.value=category;select.dispatchEvent(new Event('change'));document.getElementById('dynamicProductGrid')?.scrollIntoView({behavior:'smooth',block:'start'});}
-}
 
 const defaultAdminProducts = [
   {name:'Longi 550W Solar Panel Mono PERC',price:24999,category:'Solar'},
@@ -584,31 +564,34 @@ function setOrderStatus(id,status){const a=getOrders();const o=a.find(x=>x.id===
 
 <script>
 /* FME V5 secure backend integration. Replace only these two public Supabase values after creating your project. */
-let FME_SUPABASE_URL = localStorage.getItem('fme_supabase_url') || 'https://YOUR-PROJECT.supabase.co';
-let FME_SUPABASE_ANON_KEY = localStorage.getItem('fme_supabase_anon_key') || 'YOUR-SUPABASE-ANON-KEY';
+let FME_SUPABASE_URL = localStorage.getItem('fme_supabase_url') || '';
+let FME_SUPABASE_ANON_KEY = localStorage.getItem('fme_supabase_anon_key') || '';
 let fme = null;
-function isSupabaseConfigured(){return !!(window.supabase && /^https:\/\/[^\s]+$/.test(FME_SUPABASE_URL) && !FME_SUPABASE_URL.includes('YOUR-PROJECT') && !FME_SUPABASE_ANON_KEY.includes('YOUR-SUPABASE'));}
-function configureSupabase(){
-  const o=document.getElementById('supabaseConfigOverlay');
-  if(!o)return;
-  document.getElementById('supabaseUrlInput').value=FME_SUPABASE_URL.includes('YOUR-PROJECT')?'':FME_SUPABASE_URL;
-  document.getElementById('supabaseKeyInput').value=FME_SUPABASE_ANON_KEY.includes('YOUR-SUPABASE')?'':FME_SUPABASE_ANON_KEY;
-  const m=document.getElementById('supabaseConfigMsg'); if(m)m.textContent='';
-  o.style.display='flex';
+function isSupabaseConfigured(){return !!(window.supabase && /^https:\/\/[^\s]+$/.test(FME_SUPABASE_URL) && FME_SUPABASE_ANON_KEY && !FME_SUPABASE_URL.includes('YOUR-PROJECT') && !FME_SUPABASE_ANON_KEY.includes('YOUR-SUPABASE'));}
+async function loadSupabaseConfig(){
+  if(isSupabaseConfigured())return true;
+  try{
+    const r=await fetch('/api/config',{cache:'no-store'});
+    if(r.ok){const c=await r.json();if(c?.supabaseUrl&&c?.supabaseKey){FME_SUPABASE_URL=String(c.supabaseUrl).trim();FME_SUPABASE_ANON_KEY=String(c.supabaseKey).trim();}}
+  }catch(e){console.warn('Vercel config endpoint unavailable',e)}
+  if(isSupabaseConfigured()){
+    try{localStorage.setItem('fme_supabase_url',FME_SUPABASE_URL);localStorage.setItem('fme_supabase_anon_key',FME_SUPABASE_ANON_KEY)}catch(e){}
+    fme=window.supabase.createClient(FME_SUPABASE_URL,FME_SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    return true;
+  }
+  return false;
 }
-function closeSupabaseConfig(){const o=document.getElementById('supabaseConfigOverlay');if(o)o.style.display='none';}
-function saveSupabaseConfig(){
-  const url=(document.getElementById('supabaseUrlInput')?.value||'').trim();
-  const key=(document.getElementById('supabaseKeyInput')?.value||'').trim();
-  const m=document.getElementById('supabaseConfigMsg');
-  if(!/^https:\/\/[^\s]+$/.test(url) || !key){if(m){m.textContent='Please enter a valid Project URL and Publishable/Public key.';m.style.color='#b22';}return;}
-  localStorage.setItem('fme_supabase_url',url);
-  localStorage.setItem('fme_supabase_anon_key',key);
-  closeSupabaseConfig();
+function configureSupabase(){
+  const url=prompt('Supabase Project URL:', FME_SUPABASE_URL.includes('YOUR-PROJECT')?'':FME_SUPABASE_URL);
+  if(url===null)return;
+  const key=prompt('Supabase Public/Anon/Publishable Key (NOT service_role):', FME_SUPABASE_ANON_KEY.includes('YOUR-SUPABASE')?'':FME_SUPABASE_ANON_KEY);
+  if(key===null)return;
+  if(!/^https:\/\/[^\s]+$/.test(url.trim()) || !key.trim()){showToast('Invalid Supabase URL or public key');return;}
+  localStorage.setItem('fme_supabase_url',url.trim());
+  localStorage.setItem('fme_supabase_anon_key',key.trim());
   location.reload();
 }
 function clearSupabaseConfig(){localStorage.removeItem('fme_supabase_url');localStorage.removeItem('fme_supabase_anon_key');location.reload();}
-if(isSupabaseConfigured()) fme=window.supabase.createClient(FME_SUPABASE_URL,FME_SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 
 function setBackendStatus(text,ok=false){const e=document.getElementById('backendStatus');if(e){e.textContent='● '+text;e.style.color=ok?'#087d47':'#a66a00';}}
 let authMode='login'; let fmeUser=null; let fmeIsAdmin=false; let dbProducts=[];
@@ -627,34 +610,50 @@ async function submitAuth(e){e.preventDefault();if(!fme){authMsg('Backend is not
 }
 async function secureLogout(){if(fme) await fme.auth.signOut();fmeUser=null;fmeIsAdmin=false;refreshAuthUI();closeAuth();showToast('Logged out ✓')}
 async function loadFmeProfile(){if(!fme||!fmeUser)return;const {data,error}=await fme.from('profiles').select('role,full_name,phone,city,area,address').eq('id',fmeUser.id).maybeSingle();if(error){showToast('Profile load failed: '+error.message);return}fmeIsAdmin=data?.role==='admin';document.getElementById('adminOpen').textContent=fmeIsAdmin?'Admin Panel':'Admin Login';const vals={profileName:data?.full_name||'',profilePhone:data?.phone||'',profileCity:data?.city||'',profileArea:data?.area||'',profileAddress:data?.address||''};Object.entries(vals).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.value=v});const checkout={customerName:data?.full_name||'',customerPhone:data?.phone||'',customerCity:data?.city||'',customerArea:data?.area||'',customerAddress:data?.address||''};Object.entries(checkout).forEach(([id,v])=>{const e=document.getElementById(id);if(e&&v&&!e.value)e.value=v})}
-async function openNotifications(){
-  const overlay=document.getElementById('notificationOverlay'), list=document.getElementById('notificationList');
-  if(!fme){openAuth();authMsg('Please configure Supabase first to use Notifications.');return}
-  if(!fmeUser){openAuth();authMsg('Please login to view your notifications.');return}
-  overlay.style.display='block';
-  list.innerHTML='<div class=\"admin-box\">Loading notifications…</div>';
-  const {data,error}=await fme.from('notifications').select('id,title,message,read_at,created_at,order_id').eq('user_id',fmeUser.id).order('created_at',{ascending:false}).limit(100);
-  if(error){list.innerHTML='<div class=\"admin-box\"><b>Could not load notifications</b><br><small>'+escapeHtml(error.message)+'</small></div>';return}
-  const rows=data||[];
-  list.innerHTML=rows.length?rows.map(n=>`<div class=\"admin-box\" style=\"margin-top:10px;${n.read_at?'opacity:.72':'border-left:4px solid #087d47'}\"><div style=\"display:flex;justify-content:space-between;gap:10px\"><b>${escapeHtml(n.title)}</b><small>${new Date(n.created_at).toLocaleString('en-PK')}</small></div><p style=\"margin:8px 0 0\">${escapeHtml(n.message)}</p>${!n.read_at?`<button class=\"admin-close\" style=\"margin-top:8px\" onclick=\"markNotificationRead('${n.id}')\">Mark as read</button>`:''}</div>`).join(''):'<div class=\"admin-box\">No notifications yet.</div>';
+async function bootFme(){
+  setBackendStatus('Checking backend…');
+  await loadSupabaseConfig();
+  if(!fme){setBackendStatus('Offline demo');document.getElementById('backendConfig')?.setAttribute('title','Configure Supabase');return}
+  setBackendStatus('Connecting…');
+  try{
+    const {data,error}=await fme.auth.getSession();
+    if(error)throw error;
+    fmeUser=data.session?.user||null;
+    if(fmeUser)await loadFmeProfile();
+    await loadStoreSettings();
+    await loadProductsOnline();
+    setBackendStatus('Supabase connected',true);
+    document.getElementById('backendConfig')?.setAttribute('title','Supabase connected — tap to change');
+    fme.auth.onAuthStateChange(async(_event,session)=>{fmeUser=session?.user||null;fmeIsAdmin=false;if(fmeUser)await loadFmeProfile();refreshAuthUI();});
+  }catch(err){
+    setBackendStatus('Backend error');
+    console.error('Supabase boot error',err);
+    showToast('Backend connection failed: '+(err?.message||'Unknown error'));
+  }
 }
-async function markNotificationRead(id){
-  if(!fme||!fmeUser)return;
-  const {error}=await fme.from('notifications').update({read_at:new Date().toISOString()}).eq('id',id).eq('user_id',fmeUser.id);
-  if(error){showToast('Could not update notification: '+error.message);return}
-  await openNotifications();
+function normalizeProductCategory(value){
+  const v=String(value||'').trim().toLowerCase().replace(/\s+/g,'-');
+  const map={'solar':'solar-panels','solar-product':'solar-panels','solar-products':'solar-panels','solar-panel':'solar-panels','solar-panels':'solar-panels','inverter':'inverters','inverters':'inverters','battery':'batteries','batteries':'batteries','cable':'cables','cables':'cables','mobile-accessories':'mobile','mobile':'mobile','lighting':'lighting','lights':'lighting','other':'other'};
+  return map[v]||v||'other';
 }
-async function markAllNotificationsRead(){
-  if(!fme||!fmeUser)return;
-  const {error}=await fme.from('notifications').update({read_at:new Date().toISOString()}).eq('user_id',fmeUser.id).is('read_at',null);
-  if(error){showToast('Could not update notifications: '+error.message);return}
-  await openNotifications();
+async function loadProductsOnline(){
+  if(!fme)return;
+  const {data,error}=await fme.from('products').select('*').eq('active',true).order('created_at',{ascending:false});
+  if(error){setBackendStatus('Database error');console.error('Products load error',error);showToast('Products could not load: '+error.message);return false}
+  if(Array.isArray(data)&&data.length){
+    const normalized=data.map(p=>({...p,category:normalizeProductCategory(p.category)}));
+    dbProducts=normalized;window.dbProducts=normalized;
+    prices={...prices,...Object.fromEntries(normalized.map(p=>[p.name,Number(p.price)]))};
+    try{localStorage.setItem('fme_products',JSON.stringify(normalized));}catch(e){}
+    renderOnlineCatalog(normalized);renderCart();return true;
+  }
+  // Do not erase a working local cache when the online table is empty.
+  const cached=(()=>{try{return JSON.parse(localStorage.getItem('fme_products')||'[]')}catch(e){return[]}})();
+  if(Array.isArray(cached)&&cached.length){renderOnlineCatalog(cached);return false}
+  renderOnlineCatalog([]);return false;
 }
-
-async function bootFme(){if(!fme){setBackendStatus('Offline demo');document.getElementById('backendConfig')?.setAttribute('title','Configure Supabase');return}setBackendStatus('Connecting…');const {data,error}=await fme.auth.getSession();if(error){setBackendStatus('Backend error');showToast(error.message);return}fmeUser=data.session?.user||null;if(fmeUser)await loadFmeProfile();await loadStoreSettings();setBackendStatus('Supabase connected',true);document.getElementById('backendConfig')?.setAttribute('title','Supabase connected — tap to change');fme.auth.onAuthStateChange(async(_event,session)=>{fmeUser=session?.user||null;fmeIsAdmin=false;if(fmeUser)await loadFmeProfile();refreshAuthUI();});}
-async function loadProductsOnline(){if(!fme)return;const {data,error}=await fme.from('products').select('*').eq('active',true).order('created_at',{ascending:false});if(error){setBackendStatus('Database error');showToast('Products could not load: '+error.message);return}if(Array.isArray(data)){dbProducts=data;window.dbProducts=data;prices={...prices,...Object.fromEntries(data.map(p=>[p.name,Number(p.price)]))};localStorage.setItem('fme_products',JSON.stringify(data));renderOnlineCatalog(data);renderCart()}}
-function renderOnlineCatalog(products){const grid=document.getElementById('dynamicProductGrid');if(!grid)return;const q=(document.getElementById('catalogSearch')?.value||'').toLowerCase(),cat=document.getElementById('catalogCategory')?.value||'all';const list=products.filter(p=>(!q||(p.name||'').toLowerCase().includes(q)||(p.description||'').toLowerCase().includes(q))&&(cat==='all'||p.category===cat));grid.innerHTML=list.map(p=>`<article style="border:1px solid #e8e8e8;border-radius:14px;padding:12px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.05)">${p.image?`<img src="${escapeHtml(p.image)}" style="width:100%;height:170px;object-fit:contain;border-radius:10px;background:#f7f7f7">`:`<div style="height:170px;display:grid;place-items:center;background:#f7f7f7;border-radius:10px;font-size:52px">☀️</div>`}<div style="padding:10px 2px"><div style="font-size:12px;color:#777;text-transform:capitalize">${escapeHtml((p.category||'other').replaceAll('-',' '))}</div><h3 style="margin:5px 0 8px;font-size:17px">${escapeHtml(p.name)}</h3><div style="font-weight:800;font-size:18px;margin-bottom:10px">${money(p.price)}${Number.isFinite(Number(p.stock))?`<div style="font-size:12px;color:${Number(p.stock)>0?"#087d47":"#b22"};margin-bottom:8px">${Number(p.stock)>0?`Stock: ${Number(p.stock)}`:"Out of stock"}</div>`:""}<button onclick="addProduct('${String(p.id).replaceAll("'","\\'")}')" style="width:100%;padding:10px;border:0;border-radius:8px;cursor:pointer;background:#0b9e56;color:#fff;font-weight:800" ${Number.isFinite(Number(p.stock))&&Number(p.stock)<=0?"disabled":""}>${Number.isFinite(Number(p.stock))&&Number(p.stock)<=0?"Out of Stock":"Add to Cart"}</button></div></article>`).join('')||'<div style="grid-column:1/-1;text-align:center;padding:35px;color:#777">No products found.</div>'}
-async function openSecureAdmin(){if(!fme){openAuth();showAuthMode('login');authMsg('Secure online Admin requires Supabase configuration in this V8 build.');return}if(!fmeUser){openAuth();showAuthMode('login');authMsg('Admin login required.');return}await loadFmeProfile();if(!fmeIsAdmin){openAuth();showAuthMode('login');authMsg('This account is not an admin yet. In Supabase SQL Editor, run the Admin Setup SQL from ADMIN_SETUP.sql using the email of your admin account, then log in again.');return}closeAuth();document.getElementById('adminOverlay').style.display='block';adminRenderSecure()}
+function renderOnlineCatalog(products){const grid=document.getElementById('dynamicProductGrid');if(!grid)return;const q=(document.getElementById('catalogSearch')?.value||'').toLowerCase(),cat=document.getElementById('catalogCategory')?.value||'all';const list=products.filter(p=>(!q||(p.name||'').toLowerCase().includes(q)||(p.description||'').toLowerCase().includes(q))&&(cat==='all'||normalizeProductCategory(p.category)===cat));grid.innerHTML=list.map(p=>`<article style="border:1px solid #e8e8e8;border-radius:14px;padding:12px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.05)">${p.image?`<img src="${escapeHtml(p.image)}" style="width:100%;height:170px;object-fit:contain;border-radius:10px;background:#f7f7f7">`:`<div style="height:170px;display:grid;place-items:center;background:#f7f7f7;border-radius:10px;font-size:52px">☀️</div>`}<div style="padding:10px 2px"><div style="font-size:12px;color:#777;text-transform:capitalize">${escapeHtml((p.category||'other').replaceAll('-',' '))}</div><h3 style="margin:5px 0 8px;font-size:17px">${escapeHtml(p.name)}</h3><div style="font-weight:800;font-size:18px;margin-bottom:10px">${money(p.price)}${Number.isFinite(Number(p.stock))?`<div style="font-size:12px;color:${Number(p.stock)>0?"#087d47":"#b22"};margin-bottom:8px">${Number(p.stock)>0?`Stock: ${Number(p.stock)}`:"Out of stock"}</div>`:""}<button onclick="addProduct('${String(p.id).replaceAll("'","\\'")}')" style="width:100%;padding:10px;border:0;border-radius:8px;cursor:pointer;background:#0b9e56;color:#fff;font-weight:800" ${Number.isFinite(Number(p.stock))&&Number(p.stock)<=0?"disabled":""}>${Number.isFinite(Number(p.stock))&&Number(p.stock)<=0?"Out of Stock":"Add to Cart"}</button></div></article>`).join('')||'<div style="grid-column:1/-1;text-align:center;padding:35px;color:#777">No products found.</div>'}
+async function openSecureAdmin(){if(!fme){openAuth();showAuthMode('login');authMsg('Secure online Admin requires Supabase configuration in this V8 build.');return}if(!fmeUser){openAuth();showAuthMode('login');authMsg('Admin login required.');return}await loadFmeProfile();if(!fmeIsAdmin){openAuth();authMsg('This account is not an admin.');return}closeAuth();document.getElementById('adminOverlay').style.display='block';adminRenderSecure()}
 async function adminRenderSecure(){if(!fme)return;const {data,error}=await fme.from('products').select('*').order('created_at',{ascending:false});if(error){showToast(error.message);return}const box=document.getElementById('adminProducts');document.getElementById('adminProductCount').textContent=data.length;await renderAdminStats();document.getElementById('adminProducts').innerHTML=data.map(p=>`<div class="admin-product"><div><b>${escapeHtml(p.name)}</b><br><small>${escapeHtml(p.category)} · ${money(p.price)} · Stock: ${Number(p.stock||0)} · ${p.active?'Active':'Hidden'}</small></div><div><button onclick="secureEditProduct('${p.id}')">Edit</button><button onclick="secureDeleteProduct('${p.id}')">Delete</button></div></div>`).join('');}
 async function renderAdminStats(){
   if(!fme)return;
@@ -860,8 +859,8 @@ async function printInvoice(idOrOrder){
   const cur=st.currency||'Rs.';
   const items=(o.order_items||[]).map(i=>`<tr><td>${escapeHtml(i.product_name||'')}</td><td>${Number(i.quantity||0)}</td><td>${cur} ${Number(i.unit_price||0).toLocaleString()}</td><td>${cur} ${Number(i.subtotal||0).toLocaleString()}</td></tr>`).join('');
   const subtotal=Number(o.subtotal??(Number(o.total||0)+Number(o.discount||0))), discount=Number(o.discount||0), total=Number(o.total||0);
-  const html=`<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(o.invoice_number||('INV-'+o.order_number))}</title><style>body{font-family:Arial,sans-serif;margin:0;background:#f5f7f6;color:#17201d}.sheet{max-width:820px;margin:30px auto;background:#fff;padding:34px;border-radius:12px}h1{margin:0 0 4px;font-size:28px}.muted{color:#66736f;font-size:12px}.top{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #17201d;padding-bottom:18px}.meta{margin:20px 0;display:grid;grid-template-columns:1fr 1fr;gap:16px}.box{border:1px solid #dde5e1;border-radius:9px;padding:12px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{padding:10px;border-bottom:1px solid #e4e9e7;text-align:left}th{font-size:12px}.totals{margin:20px 0 0 auto;max-width:320px}.line{display:flex;justify-content:space-between;padding:5px 0}.grand{font-size:20px;font-weight:800;border-top:2px solid #17201d;margin-top:8px;padding-top:10px}@media print{body{background:#fff}.sheet{margin:0;box-shadow:none;padding:20px}}</style></head><body><div class="sheet"><div class="top"><div><h1>${escapeHtml(st.store_name||'Faheem Mobile and Solar Electronics')}</h1><div class="muted">${escapeHtml(st.address||'')} · ${escapeHtml(st.phone||'')}</div></div><div><b>INVOICE</b><br><span class="muted">${escapeHtml(o.invoice_number||('INV-'+o.order_number))}</span><br><span class="muted">${new Date(o.created_at).toLocaleString('en-PK')}</span></div></div><div class="meta"><div class="box"><b>Bill To</b><br>${escapeHtml(o.customer_name)}<br>${escapeHtml(o.phone)}<br>${escapeHtml(o.address)}, ${escapeHtml(o.city)}</div><div class="box"><b>Payment</b><br>${escapeHtml(o.payment_method||'')}<br>Status: ${escapeHtml(o.payment_status||'Pending')}<br>${o.payment_reference?'Reference: '+escapeHtml(o.payment_reference):''}</div></div><table><thead><tr><th>Product</th><th>Qty</th><th>Unit</th><th>Amount</th></tr></thead><tbody>${items}</tbody></table><div class="totals"><div class="line"><span>Subtotal</span><b>${cur} ${subtotal.toLocaleString()}</b></div><div class="line"><span>Discount</span><b>- ${cur} ${discount.toLocaleString()}</b></div><div class="grand"><div class="line"><span>Total</span><span>${cur} ${total.toLocaleString()}</span></div></div></div><p class="muted" style="margin-top:28px">Thank you for shopping with us. This is a system-generated receipt.</p></div><script>window.onload=()=>window.print()<\/script></body></html>`;
-  const w=window.open('','_blank'); if(!w)return showToast('Please allow popups for invoice'); w.document.write(html);w.document.close();
+  const html=`<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(o.invoice_number||('INV-'+o.order_number))}</title><style>body{font-family:Arial,sans-serif;margin:0;background:#f5f7f6;color:#17201d}.sheet{max-width:820px;margin:30px auto;background:#fff;padding:34px;border-radius:12px}h1{margin:0 0 4px;font-size:28px}.muted{color:#66736f;font-size:12px}.top{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #17201d;padding-bottom:18px}.meta{margin:20px 0;display:grid;grid-template-columns:1fr 1fr;gap:16px}.box{border:1px solid #dde5e1;border-radius:9px;padding:12px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{padding:10px;border-bottom:1px solid #e4e9e7;text-align:left}th{font-size:12px}.totals{margin:20px 0 0 auto;max-width:320px}.line{display:flex;justify-content:space-between;padding:5px 0}.grand{font-size:20px;font-weight:800;border-top:2px solid #17201d;margin-top:8px;padding-top:10px}@media print{body{background:#fff}.sheet{margin:0;box-shadow:none;padding:20px}}</style></head><body><div class="sheet"><div class="top"><div><h1>${escapeHtml(st.store_name||'Faheem Mobile and Solar Electronics')}</h1><div class="muted">${escapeHtml(st.address||'')} · ${escapeHtml(st.phone||'')}</div></div><div><b>INVOICE</b><br><span class="muted">${escapeHtml(o.invoice_number||('INV-'+o.order_number))}</span><br><span class="muted">${new Date(o.created_at).toLocaleString('en-PK')}</span></div></div><div class="meta"><div class="box"><b>Bill To</b><br>${escapeHtml(o.customer_name)}<br>${escapeHtml(o.phone)}<br>${escapeHtml(o.address)}, ${escapeHtml(o.city)}</div><div class="box"><b>Payment</b><br>${escapeHtml(o.payment_method||'')}<br>Status: ${escapeHtml(o.payment_status||'Pending')}<br>${o.payment_reference?'Reference: '+escapeHtml(o.payment_reference):''}</div></div><table><thead><tr><th>Product</th><th>Qty</th><th>Unit</th><th>Amount</th></tr></thead><tbody>${items}</tbody></table><div class="totals"><div class="line"><span>Subtotal</span><b>${cur} ${subtotal.toLocaleString()}</b></div><div class="line"><span>Discount</span><b>- ${cur} ${discount.toLocaleString()}</b></div><div class="grand"><div class="line"><span>Total</span><span>${cur} ${total.toLocaleString()}</span></div></div></div><p class="muted" style="margin-top:28px">Thank you for shopping with us. This is a system-generated receipt.</p></div></body></html>`;
+  const w=window.open('','_blank'); if(!w)return showToast('Please allow popups for invoice'); w.document.write(html);w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch(e){}},250);
 }
 async function customerInvoice(id){const {data,error}=await fme.from('orders').select('*,order_items(*)').eq('id',id).eq('user_id',fmeUser.id).single();if(error)return showToast(error.message);printInvoice(data)}
 async function customerWhatsAppTracking(id){const {data,error}=await fme.from('orders').select('id,order_number,status,payment_status,total,tracking_number,shipping_provider,estimated_delivery').eq('id',id).eq('user_id',fmeUser.id).single();if(error)return showToast(error.message);const wa=String(window.fmeStoreSettings?.whatsapp||'').replace(/\D/g,'');const msg=`Order ${data.order_number}\nStatus: ${window.fmeV15?.statusLabel(data.status)||data.status}\nPayment: ${data.payment_status||'Pending'}\nTracking: ${data.tracking_number||'Not assigned'}\nCourier: ${data.shipping_provider||'Not assigned'}\nETA: ${data.estimated_delivery||'To be confirmed'}`;if(wa)window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(msg),'_blank')}
