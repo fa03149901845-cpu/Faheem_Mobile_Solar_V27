@@ -1,0 +1,13 @@
+project_id = "YOUR_PROJECT_REF"
+
+[functions.health-check]
+verify_jwt = false
+
+[functions.payment-webhook]
+verify_jwt = false
+
+[functions.create-payment]
+verify_jwt = true
+
+[functions.send-whatsapp]
+verify_jwt = false
