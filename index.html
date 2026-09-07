@@ -75,7 +75,7 @@ html,body{max-width:100%;overflow-x:hidden}
   <div class="search"><input placeholder="Search for products..."><select><option>All Categories</option><option>Solar Products</option><option>Mobile Accessories</option><option>Electronics</option></select><button>⌕</button></div>
   <div class="actions"><button id="backendConfig" class="admin-btn" style="font-size:11px" onclick="configureSupabase()">⚙ Backend</button><span id="backendStatus" style="font-size:11px;color:#777;margin-right:6px">● Checking backend…</span><button class="admin-btn" id="adminOpen">Admin Login</button><button class="admin-btn" id="ordersOpen">Orders</button><button class="admin-btn" onclick="openOrderTracker()">Track Order</button><button class="admin-btn" id="notificationsOpen" onclick="openNotifications()">🔔 Notifications</button><button class="action" id="accountOpen" style="border:0;background:transparent;cursor:pointer">♙<strong id="accountLabel">My Account</strong></button><div class="action" id="headerCart" style="cursor:pointer">🛒<strong>Cart · Rs. 0</strong></div></div>
 </header>
-<nav class="nav" id="mainNav"><span class="all" id="navAllCategories" role="button" tabindex="0">☰ &nbsp; All Categories</span><a href="#" data-nav="home">Home</a><a href="#" data-nav="solar-panels">Solar Products</a><a href="#" data-nav="mobile">Mobile Accessories</a><a href="#" data-nav="electronics">Electronics</a>
+<nav class="nav"><button type="button" class="all" id="allCategoriesBtn" style="border:0;background:transparent;color:inherit;cursor:pointer;font:inherit;padding:0">☰ &nbsp; All Categories</button><a href="#" data-nav="home">Home</a><a href="#" data-nav="solar">Solar Products</a><a href="#" data-nav="mobile">Mobile Accessories</a><a href="#" data-nav="electronics">Electronics</a>
 <section id="dynamicCatalog" style="padding:28px 5%;background:#fff;">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;">
     <div>
@@ -602,7 +602,7 @@ function openAuth(){document.getElementById('authModal').style.display='flex';re
 function closeAuth(){document.getElementById('authModal').style.display='none'}
 function refreshAuthUI(){
  const form=document.getElementById('authForm'), tabs=document.querySelector('.auth-tabs'), state=document.getElementById('loggedState');
- if(fmeUser){form.style.display='none';tabs.style.display='none';state.style.display='block';document.getElementById('accountInfo').innerHTML='<b>Signed in</b><br>'+escapeHtml(fmeUser.email||'')+(fmeIsAdmin?'<br><small>Admin access enabled</small>':'');document.getElementById('accountLabel').querySelector('strong').textContent='My Account';}
+ if(fmeUser){form.style.display='none';tabs.style.display='none';state.style.display='block';document.getElementById('accountInfo').innerHTML='<b>Signed in</b><br>'+escapeHtml(fmeUser.email||'')+(fmeIsAdmin?'<br><small>Admin access enabled</small>':'');document.getElementById('accountLabel').textContent='My Account';}
  else {form.style.display='block';tabs.style.display='flex';state.style.display='none';}
 }
 async function submitAuth(e){e.preventDefault();if(!fme){authMsg('Backend is not configured yet. Add Supabase URL and anon key in the V5 file.');return} const email=document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value,name=document.getElementById('authName').value.trim();authMsg('Please wait…');
@@ -879,6 +879,103 @@ window.fmeV15 = {
   },
   statusLabel(s) { return String(s||'').replaceAll('_',' ').replace(/\b\w/g,m=>m.toUpperCase()); }
 };
+</script>
+<script>
+/* FME navigation repair: real client-side navigation for header, categories, account and notifications. */
+(function(){
+  function byId(id){return document.getElementById(id)}
+  function setCatalogCategory(value){
+    const sel=byId('catalogCategory');
+    if(sel) sel.value=value;
+    const cat=byId('catalogCategory');
+    if(cat){cat.dispatchEvent(new Event('change',{bubbles:true}));}
+    const section=byId('dynamicCatalog');
+    if(section) section.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function navTo(type){
+    if(type==='home'){
+      const cat=byId('catalogCategory'); if(cat) cat.value='all';
+      const search=byId('catalogSearch'); if(search) search.value='';
+      if(typeof renderCatalog==='function') renderCatalog();
+      window.scrollTo({top:0,behavior:'smooth'});
+      return;
+    }
+    if(type==='solar'){
+      setCatalogCategory('solar-panels');
+      // Solar navigation includes the main solar product families.
+      if(byId('catalogSearch')) byId('catalogSearch').value='';
+      if(typeof renderCatalog==='function') renderCatalog();
+      return;
+    }
+    if(type==='mobile'){setCatalogCategory('mobile');return;}
+    if(type==='electronics'){
+      // The current catalog has lighting/other as electronics-type categories.
+      const grid=byId('dynamicProductGrid');
+      if(byId('catalogSearch')) byId('catalogSearch').value='';
+      const sel=byId('catalogCategory');
+      if(sel) sel.value='lighting';
+      if(typeof renderCatalog==='function') renderCatalog();
+      if(grid) grid.scrollIntoView({behavior:'smooth',block:'start'});
+      return;
+    }
+  }
+  function openAllCategories(){
+    let panel=byId('quickCategoryMenu');
+    if(!panel){
+      panel=document.createElement('div'); panel.id='quickCategoryMenu';
+      panel.style.cssText='position:fixed;top:115px;left:4%;z-index:2500;background:#fff;border:1px solid #dfe9e5;border-radius:12px;box-shadow:0 12px 35px #0002;padding:10px;min-width:230px;display:grid;gap:6px';
+      panel.innerHTML='<b style="padding:6px 8px">Categories</b>'+
+        '<button data-cat="all">All Products</button><button data-cat="solar-panels">Solar Products</button><button data-cat="mobile">Mobile Accessories</button><button data-cat="lighting">Electronics</button>';
+      panel.querySelectorAll('button').forEach(b=>{b.style.cssText='border:0;background:#f5faf8;text-align:left;padding:10px;border-radius:8px;cursor:pointer;font-weight:700';b.addEventListener('click',function(){setCatalogCategory(this.dataset.cat);panel.style.display='none';});});
+      document.body.appendChild(panel);
+      document.addEventListener('click',function(e){if(panel.style.display!=='none' && !panel.contains(e.target) && e.target!==byId('allCategoriesBtn')) panel.style.display='none';});
+    }
+    panel.style.display=panel.style.display==='none'?'grid':'none';
+  }
+  function openNotificationsSafe(){
+    const overlay=byId('notificationOverlay'); if(!overlay)return;
+    overlay.style.display='block';
+    const list=byId('notificationList'); if(!list)return;
+    if(!window.fme || !window.fmeUser){
+      list.innerHTML='<div class="admin-box"><b>Notifications</b><p>Please login to see your order and payment updates.</p><button class="btn" onclick="openAuth();closeOverlay(\'notificationOverlay\')">Login</button></div>'; return;
+    }
+    list.innerHTML='<p>Loading notifications…</p>';
+    (async function(){
+      try{
+        const {data,error}=await window.fme.from('orders').select('order_number,status,payment_status,total,created_at,updated_at').eq('user_id',window.fmeUser.id).order('updated_at',{ascending:false}).limit(20);
+        if(error) throw error;
+        const rows=data||[];
+        list.innerHTML=rows.length ? rows.map(o=>`<div class="admin-product"><div><b>Order #${escapeHtml(o.order_number||'')}</b><br><small>Status: ${escapeHtml(window.fmeV15?.statusLabel(o.status)||o.status||'Pending')} · Payment: ${escapeHtml(o.payment_status||'Pending')}</small><br><small>Total: ${money(o.total)} · ${new Date(o.updated_at||o.created_at).toLocaleString('en-PK')}</small></div></div>`).join('') : '<div class="admin-box"><p>No notifications yet.</p></div>';
+      }catch(err){list.innerHTML='<div class="admin-box"><p style="color:#b22">Could not load notifications: '+escapeHtml(err.message||'Unknown error')+'</p></div>';}
+    })();
+  }
+  function bind(){
+    byId('accountOpen')?.addEventListener('click',function(){openAuth();});
+    byId('notificationsOpen')?.addEventListener('click',openNotificationsSafe);
+    byId('allCategoriesBtn')?.addEventListener('click',openAllCategories);
+    document.querySelectorAll('[data-nav]').forEach(a=>a.addEventListener('click',function(e){e.preventDefault();navTo(this.dataset.nav);}));
+    // Make the top search category selector actually navigate/filter.
+    const topSel=document.querySelector('.search select');
+    topSel?.addEventListener('change',function(){
+      const v=this.value;
+      if(v==='All Categories') navTo('home');
+      else if(v==='Solar Products') navTo('solar');
+      else if(v==='Mobile Accessories') navTo('mobile');
+      else if(v==='Electronics') navTo('electronics');
+    });
+    document.querySelector('.search button')?.addEventListener('click',function(){
+      const q=document.querySelector('.search input')?.value.trim()||'';
+      const cs=byId('catalogSearch'); if(cs) cs.value=q;
+      if(typeof renderCatalog==='function') renderCatalog();
+      byId('dynamicCatalog')?.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    // Hero and featured links should no longer be dead placeholders.
+    document.querySelector('.hero .btn')?.addEventListener('click',function(e){e.preventDefault();byId('featured')?.scrollIntoView({behavior:'smooth'});});
+    document.querySelectorAll('.section-head .view').forEach(a=>a.addEventListener('click',function(e){e.preventDefault();byId('dynamicCatalog')?.scrollIntoView({behavior:'smooth'});}));
+  }
+  window.openNotifications=openNotificationsSafe;
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind); else bind();
+})();
 </script>
 </body>
 </html>
