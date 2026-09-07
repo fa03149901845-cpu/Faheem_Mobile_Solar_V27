@@ -78,7 +78,9 @@ footer{background:#f1faf6;padding:36px 5% 0}.footgrid{max-width:1320px;margin:au
   <div class="search"><input placeholder="Search for products..."><select><option>All Categories</option><option>Solar Products</option><option>Mobile Accessories</option><option>Electronics</option></select><button>⌕</button></div>
   <div class="actions"><button id="backendConfig" class="admin-btn" style="font-size:11px" onclick="configureSupabase()">⚙ Backend</button><span id="backendStatus" style="font-size:11px;color:#777;margin-right:6px">● Offline demo</span><button class="admin-btn" id="adminOpen">Admin Login</button><button class="admin-btn" id="ordersOpen">Orders</button><button class="admin-btn" onclick="openOrderTracker()">Track Order</button><button class="admin-btn" id="notificationsOpen" onclick="openNotifications()">🔔 Notifications</button><button class="action" id="accountOpen" style="border:0;background:transparent;cursor:pointer">♙<strong id="accountLabel">My Account</strong></button><div class="action" id="headerCart" style="cursor:pointer">🛒<strong>Cart · Rs. 0</strong></div></div>
 </header>
-<nav class="nav"><span class="all">☰ &nbsp; All Categories</span><a href="#home" id="homeNav">Home</a><a href="#">Solar Products</a><a href="#">Mobile Accessories</a><a href="#">Electronics</a>
+<nav class="nav"><span class="all">☰ &nbsp; All Categories</span><a href="#">Home</a><a href="#">Solar Products</a><a href="#">Mobile Accessories</a><a href="#">Electronics</a>
+
+<a href="#">Special Offers</a><a href="#">Contact Us</a><a class="wa" href="https://wa.me/923001234567">◉ WhatsApp Order</a></nav>
 <section id="dynamicCatalog" style="padding:28px 5%;background:#fff;">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;">
     <div>
@@ -101,7 +103,6 @@ footer{background:#f1faf6;padding:36px 5% 0}.footgrid{max-width:1320px;margin:au
   </div>
   <div id="dynamicProductGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;"></div>
 </section>
-<a href="#">Special Offers</a><a href="#">Contact Us</a><a class="wa" href="https://wa.me/923001234567">◉ WhatsApp Order</a></nav>
 
 <main>
 <section class="hero">
@@ -372,28 +373,12 @@ function adminSaveProduct(){
   adminResetForm();
   adminRender();
   showToast('Product saved ✓');
-} function adminDeleteProduct(name){
+}
+function adminDeleteProduct(name){
   const list=getAdminProducts().filter(x=>x.name!==name);
   saveAdminProducts(list);
   cart=cart.filter(x=>x.name!==name);
   renderCart();
-
-  
-  });
-
-  const homeNav=document.getElementById('homeNav');
-  homeNav?.addEventListener('click',(e)=>{
-    e.preventDefault();
-    window.scrollTo({top:0,left:0,behavior:'smooth'});
-    history.replaceState(null,'','#home');
-  });
-
-const homeNav=document.getElementById('homeNav');
-homeNav?.addEventListener('click',(e)=>{
-  e.preventDefault();
-  window.scrollTo({top:0,left:0,behavior:'smooth'});
-  history.replaceState(null,'','#home');
-});
   adminRender();
   showToast('Product deleted');
 }
