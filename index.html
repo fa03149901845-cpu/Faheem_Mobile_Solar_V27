@@ -331,8 +331,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     'Electronics':()=>filterCatalogByCategory('other'),
     'Special Offers':()=>document.getElementById('offersSection')?.scrollIntoView({behavior:'smooth'}),
     'Contact Us':()=>document.getElementById('contactSection')?.scrollIntoView({behavior:'smooth'})
-  };
-  document.querySelectorAll('.nav a:not(.wa)').forEach(a=>{const action=navActions[a.textContent.trim()];if(action){a.href='javascript:void(0)';a.addEventListener('click',e=>{e.preventDefault();action()})}});
+  };document.querySelectorAll('.nav a:not(.wa):not(#homeNav)').forEach(a=>{
   document.querySelectorAll('.cat .smallbtn').forEach((a,i)=>{a.href='javascript:void(0)';a.addEventListener('click',e=>{e.preventDefault();filterCatalogByCategory(['solar-panels','mobile','other'][i]||'all')})});
   document.querySelector('.nav .all')?.addEventListener('click',()=>filterCatalogByCategory('all'));
 });
