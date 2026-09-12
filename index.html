@@ -563,13 +563,15 @@ function setOrderStatus(id,status){const a=getOrders();const o=a.find(x=>x.id===
 
 
 <script>
-/* FME V5 secure backend integration. Replace only these two public Supabase values after creating your project. */
-let FME_SUPABASE_URL = https://ugebsmbdkcwwodlgacsj.supabase.co
-let FME_SUPABASE_ANON_KEY =sb_publishable_tP00lKlUchNQ0Ye7WeSBvg_s4PlvJhm 
-let fme = null;
-function isSupabaseConfigured(){return !!(window.supabase && /^https:\/\/[^\s]+$/.test(FME_SUPABASE_URL) && FME_SUPABASE_ANON_KEY && !FME_SUPABASE_URL.includes('YOUR-PROJECT') && !FME_SUPABASE_ANON_KEY.includes('YOUR-SUPABASE'));}
+/* FME VS secure backend integration. */
+let FME_SUPABASE_URL = localStorage.getItem('fme_supabase_url') || 'https://ebsmbdkcwwodlgacsj.supabase.co';
+let FME_SUPABASE_ANON_KEY = localStorage.getItem('fme_supabase_anon_key') || 'sb_publishable_tP00lKIUchNQ0Ye7WeSBvg_s4PlvJhm';
+
+// Force save keys so script logic and backend checks do not freeze
+localStorage.setItem('fme_supabase_url', FME_SUPABASE_URL);
+localStorage.setItem('fme_supabase_anon_key', FME_SUPABASE_ANON_KEY);
 async function loadSupabaseConfig(){
-  if(isSupabaseConfigured())return true;
+  if(isSupabaseConfigured())return true;v
   try{
     const r=await fetch('/api/config',{cache:'no-store'});
     if(r.ok){const c=await r.json();if(c?.supabaseUrl&&c?.supabaseKey){FME_SUPABASE_URL=String(c.supabaseUrl).trim();FME_SUPABASE_ANON_KEY=String(c.supabaseKey).trim();}}
