@@ -563,21 +563,16 @@ function setOrderStatus(id,status){const a=getOrders();const o=a.find(x=>x.id===
 
 
 <script>
-/* FME VS secure backend integration. */
-let FME_SUPABASE_URL = localStorage.getItem('fme_supabase_url') || 'https://ebsmbdkcwwodlgacsj.supabase.co';
-let FME_SUPABASE_ANON_KEY = localStorage.getItem('fme_supabase_anon_key') || 'sb_publishable_tP00lKIUchNQ0Ye7WeSBvg_s4PlvJhm';
+/* FME Direct Supabase Setup */
+let FME_SUPABASE_URL = 'https://ebsmbdkcwwodlgacsj.supabase.co';
+let FME_SUPABASE_ANON_KEY = 'sb_publishable_tP00lKIUchNQ0Ye7WeSBvg_s4PlvJhm';
 
-// Force save keys so script logic and backend checks do not freeze
 localStorage.setItem('fme_supabase_url', FME_SUPABASE_URL);
 localStorage.setItem('fme_supabase_anon_key', FME_SUPABASE_ANON_KEY);
-async function loadSupabaseConfig(){
-  if(isSupabaseConfigured())return true;v
-  try{
-    const r=await fetch('/api/config',{cache:'no-store'});
-    if(r.ok){const c=await r.json();if(c?.supabaseUrl&&c?.supabaseKey){FME_SUPABASE_URL=String(c.supabaseUrl).trim();FME_SUPABASE_ANON_KEY=String(c.supabaseKey).trim();}}
-  }catch(e){console.warn('Vercel config endpoint unavailable',e)}
-  if(isSupabaseConfigured()){
-    try{localStorage.setItem('fme_supabase_url',FME_SUPABASE_URL);localStorage.setItem('fme_supabase_anon_key',FME_SUPABASE_ANON_KEY)}catch(e){}
+
+function isSupabaseConfigured() {
+    return true;
+}
     fme=window.supabase.createClient(FME_SUPABASE_URL,FME_SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
     return true;
   }
