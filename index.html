@@ -75,7 +75,7 @@ html,body{max-width:100%;overflow-x:hidden}
   <div class="search"><input placeholder="Search for products..."><select><option>All Categories</option><option>Solar Products</option><option>Mobile Accessories</option><option>Electronics</option></select><button>⌕</button></div>
   <div class="actions"><button id="backendConfig" class="admin-btn" style="font-size:11px" onclick="configureSupabase()">⚙ Backend</button><span id="backendStatus" style="font-size:11px;color:#777;margin-right:6px">● Checking backend…</span><button class="admin-btn" id="adminOpen">Admin Login</button><button class="admin-btn" id="ordersOpen">Orders</button><button class="admin-btn" onclick="openOrderTracker()">Track Order</button><button class="admin-btn" id="notificationsOpen" onclick="openNotifications()">🔔 Notifications</button><button class="action" id="accountOpen" style="border:0;background:transparent;cursor:pointer">♙<strong id="accountLabel">My Account</strong></button><div class="action" id="headerCart" style="cursor:pointer">🛒<strong>Cart · Rs. 0</strong></div></div>
 </header>
-<nav class="nav" id="mainNav"><span class="all" data-category="all" style="cursor:pointer">☰ &nbsp; All Categories</span><a href="#home" data-nav="home">Home</a><a href="#dynamicCatalog" data-category="solar-panels">Solar Products</a><a href="#dynamicCatalog" data-category="mobile">Mobile Accessories</a><a href="#dynamicCatalog" data-category="other">Electronics</a>
+<nav class="nav"><span class="all">☰ &nbsp; All Categories</span><a href="#">Home</a><a href="#">Solar Products</a><a href="#">Mobile Accessories</a><a href="#">Electronics</a>
 <section id="dynamicCatalog" style="padding:28px 5%;background:#fff;">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;">
     <div>
@@ -98,9 +98,9 @@ html,body{max-width:100%;overflow-x:hidden}
   </div>
   <div id="dynamicProductGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;"></div>
 </section>
-<a href="#offers" data-nav="offers">Special Offers</a><a href="#contact" data-nav="contact">Contact Us</a><a class="wa" href="https://wa.me/923001234567">◉ WhatsApp Order</a></nav>
+<a href="#">Special Offers</a><a href="#">Contact Us</a><a class="wa" href="https://wa.me/923001234567">◉ WhatsApp Order</a></nav>
 
-<main id="home">
+<main>
 <section class="hero">
   <div class="hero-copy">
     <div class="eyebrow">HIGH QUALITY &nbsp;|&nbsp; BEST PRICES</div>
@@ -128,7 +128,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </div>
 </section>
 
-<section id="offers">
+<section>
 <div class="section-head"><h2>Special Offers</h2><a class="view" href="#">View All Offers →</a></div>
 <div class="offers">
  <div class="offer"><small>SOLAR COMBO DEAL</small><h3>All in One Package</h3><p>Up to <b>15% OFF</b></p><button>Shop Now</button></div>
@@ -146,7 +146,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </main>
 
 <footer>
-<div class="footgrid" id="contact">
+<div class="footgrid">
  <div><h3>About Faheem Mobile and Solar Electronics</h3><p>Your trusted online store for premium solar products, mobile accessories and electronics at the best prices.</p><div class="social"><span>f</span><span>◎</span><span>◉</span><span>▶</span></div></div>
  <div><h3>Quick Links</h3><a>Home</a><a>Solar Products</a><a>Mobile Accessories</a><a>Electronics</a><a>Special Offers</a><a>Contact Us</a></div>
  <div><h3>Customer Service</h3><a>My Account</a><a>Track Order</a><a>Wishlist</a><a>Returns & Refunds</a><a>FAQs</a><a>Privacy Policy</a></div>
@@ -302,54 +302,17 @@ function placeOrder(e){
 
 document.addEventListener('DOMContentLoaded',()=>{
   syncAdminPrices();
-
-  // Header actions
-  document.getElementById('adminOpen')?.addEventListener('click',()=>{
-    if(typeof openSecureAdmin==='function') openSecureAdmin();
-    else adminOpen();
-  });
-  document.getElementById('ordersOpen')?.addEventListener('click',()=>{
-    if(typeof secureOrders==='function' && fme && fmeUser) secureOrders();
-    else openOrders();
-  });
-  document.getElementById('accountOpen')?.addEventListener('click',openAuth);
-  document.getElementById('headerCart')?.addEventListener('click',openCart);
-
-  // Product cards
+  document.getElementById('adminOpen')?.addEventListener('click',adminOpen);
+  document.getElementById('ordersOpen')?.addEventListener('click',openOrders);
   document.querySelectorAll('.card').forEach(card=>{
     const h=card.querySelector('h3');
     if(h){
-      const n=h.textContent.trim();
-      const pic=card.querySelector('.pic');
-      if(pic) pic.onclick=()=>openProduct(n);
+      const n=h.textContent;
+      card.querySelector('.pic').onclick=()=>openProduct(n);
     }
   });
-
-  // Navigation
-  document.querySelectorAll('#mainNav [data-nav]').forEach(a=>{
-    a.addEventListener('click',e=>{
-      const target=a.getAttribute('href');
-      if(target && target.startsWith('#')){
-        e.preventDefault();
-        document.querySelector(target)?.scrollIntoView({behavior:'smooth',block:'start'});
-      }
-    });
-  });
-  document.querySelectorAll('#mainNav [data-category]').forEach(el=>{
-    el.addEventListener('click',e=>{
-      e.preventDefault();
-      const cat=el.getAttribute('data-category')||'all';
-      const select=document.getElementById('catalogCategory');
-      if(select)select.value=cat;
-      const section=document.getElementById('dynamicCatalog');
-      if(section)section.scrollIntoView({behavior:'smooth',block:'start'});
-      if(typeof renderCatalog==='function')renderCatalog();
-      if(typeof renderOnlineCatalog==='function' && window.dbProducts?.length)renderOnlineCatalog(window.dbProducts);
-    });
-  });
-
+  document.getElementById('headerCart')?.addEventListener('click',openCart);
   renderCart();
-  refreshAuthUI();
 });
 
 const defaultAdminProducts = [
@@ -639,14 +602,30 @@ function openAuth(){document.getElementById('authModal').style.display='flex';re
 function closeAuth(){document.getElementById('authModal').style.display='none'}
 function refreshAuthUI(){
  const form=document.getElementById('authForm'), tabs=document.querySelector('.auth-tabs'), state=document.getElementById('loggedState');
- if(fmeUser){form.style.display='none';tabs.style.display='none';state.style.display='block';document.getElementById('accountInfo').innerHTML='<b>Signed in</b><br>'+escapeHtml(fmeUser.email||'')+(fmeIsAdmin?'<br><small>Admin access enabled</small>':'');const accountLabel=document.getElementById('accountLabel');if(accountLabel)accountLabel.textContent=fmeIsAdmin?'My Account · Admin':'My Account';}
+ if(fmeUser){form.style.display='none';tabs.style.display='none';state.style.display='block';document.getElementById('accountInfo').innerHTML='<b>Signed in</b><br>'+escapeHtml(fmeUser.email||'')+(fmeIsAdmin?'<br><small>Admin access enabled</small>':'');document.getElementById('accountLabel').textContent='My Account';}
  else {form.style.display='block';tabs.style.display='flex';state.style.display='none';}
 }
-async function submitAuth(e){e.preventDefault();if(!fme){authMsg('Backend is not configured yet. Add Supabase URL and anon key in the V5 file.');return} const email=document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value,name=document.getElementById('authName').value.trim();authMsg('Please wait…');
+async function submitAuth(e){e.preventDefault();if(!fme){authMsg('Backend is not configured yet. Add Supabase URL and anon key in the current V27 store.');return} const email=document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value,name=document.getElementById('authName').value.trim();authMsg('Please wait…');
  try{if(authMode==='login'){const {data,error}=await fme.auth.signInWithPassword({email,password});if(error)throw error;fmeUser=data.user;await loadFmeProfile();authMsg('Login successful ✓',true);refreshAuthUI();setTimeout(closeAuth,500)}else{const {data,error}=await fme.auth.signUp({email,password,options:{data:{full_name:name}}});if(error)throw error;authMsg(data.session?'Account created ✓':'Account created. Check your email to confirm.',true);if(data.user){fmeUser=data.user;await loadFmeProfile();refreshAuthUI()}}}catch(err){authMsg(err.message||'Authentication failed')}
 }
 async function secureLogout(){if(fme) await fme.auth.signOut();fmeUser=null;fmeIsAdmin=false;refreshAuthUI();closeAuth();showToast('Logged out ✓')}
-async function loadFmeProfile(){if(!fme||!fmeUser)return;const {data,error}=await fme.from('profiles').select('role,full_name,phone,city,area,address').eq('id',fmeUser.id).maybeSingle();if(error){showToast('Profile load failed: '+error.message);return}fmeIsAdmin=data?.role==='admin';document.getElementById('adminOpen').textContent=fmeIsAdmin?'Admin Panel':'Admin Login';const vals={profileName:data?.full_name||'',profilePhone:data?.phone||'',profileCity:data?.city||'',profileArea:data?.area||'',profileAddress:data?.address||''};Object.entries(vals).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.value=v});const checkout={customerName:data?.full_name||'',customerPhone:data?.phone||'',customerCity:data?.city||'',customerArea:data?.area||'',customerAddress:data?.address||''};Object.entries(checkout).forEach(([id,v])=>{const e=document.getElementById(id);if(e&&v&&!e.value)e.value=v})}
+async function loadFmeProfile(){
+  if(!fme||!fmeUser)return;
+  const {data,error}=await fme.from('profiles').select('role,full_name,phone,city,area').eq('id',fmeUser.id).maybeSingle();
+  if(error){showToast('Profile load failed: '+error.message);return}
+  fmeIsAdmin=data?.role==='admin';
+  const adminBtn=document.getElementById('adminOpen');
+  if(adminBtn)adminBtn.textContent=fmeIsAdmin?'Admin Panel':'Admin Login';
+  let address='';
+  try{
+    const r=await fme.from('profiles').select('address').eq('id',fmeUser.id).maybeSingle();
+    if(!r.error)address=r.data?.address||'';
+  }catch(e){}
+  const vals={profileName:data?.full_name||'',profilePhone:data?.phone||'',profileCity:data?.city||'',profileArea:data?.area||'',profileAddress:address};
+  Object.entries(vals).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.value=v});
+  const checkout={customerName:data?.full_name||'',customerPhone:data?.phone||'',customerCity:data?.city||'',customerArea:data?.area||'',customerAddress:address};
+  Object.entries(checkout).forEach(([id,v])=>{const e=document.getElementById(id);if(e&&v&&!e.value)e.value=v});
+}
 async function bootFme(){
   setBackendStatus('Checking backend…');
   await loadSupabaseConfig();
@@ -657,8 +636,8 @@ async function bootFme(){
     if(error)throw error;
     fmeUser=data.session?.user||null;
     if(fmeUser)await loadFmeProfile();
-    try{await loadStoreSettings()}catch(e){console.warn('Store settings unavailable',e)}
-    try{await loadProductsOnline()}catch(e){console.warn('Products unavailable',e)}
+    await loadStoreSettings();
+    await loadProductsOnline();
     setBackendStatus('Supabase connected',true);
     document.getElementById('backendConfig')?.setAttribute('title','Supabase connected — tap to change');
     fme.auth.onAuthStateChange(async(_event,session)=>{fmeUser=session?.user||null;fmeIsAdmin=false;if(fmeUser)await loadFmeProfile();refreshAuthUI();});
@@ -689,7 +668,48 @@ async function loadProductsOnline(){
   if(Array.isArray(cached)&&cached.length){renderOnlineCatalog(cached);return false}
   renderOnlineCatalog([]);return false;
 }
-function renderOnlineCatalog(products){const grid=document.getElementById('dynamicProductGrid');if(!grid)return;const q=(document.getElementById('catalogSearch')?.value||'').toLowerCase(),cat=document.getElementById('catalogCategory')?.value||'all';const list=products.filter(p=>(!q||(p.name||'').toLowerCase().includes(q)||(p.description||'').toLowerCase().includes(q))&&(cat==='all'||normalizeProductCategory(p.category)===cat));grid.innerHTML=list.map(p=>`<article style="border:1px solid #e8e8e8;border-radius:14px;padding:12px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.05)">${p.image?`<img src="${escapeHtml(p.image)}" style="width:100%;height:170px;object-fit:contain;border-radius:10px;background:#f7f7f7">`:`<div style="height:170px;display:grid;place-items:center;background:#f7f7f7;border-radius:10px;font-size:52px">☀️</div>`}<div style="padding:10px 2px"><div style="font-size:12px;color:#777;text-transform:capitalize">${escapeHtml((p.category||'other').replaceAll('-',' '))}</div><h3 style="margin:5px 0 8px;font-size:17px">${escapeHtml(p.name)}</h3><div style="font-weight:800;font-size:18px;margin-bottom:10px">${money(p.price)}${Number.isFinite(Number(p.stock))?`<div style="font-size:12px;color:${Number(p.stock)>0?"#087d47":"#b22"};margin-bottom:8px">${Number(p.stock)>0?`Stock: ${Number(p.stock)}`:"Out of stock"}</div>`:""}<button onclick="addProduct('${String(p.id).replaceAll("'","\\'")}')" style="width:100%;padding:10px;border:0;border-radius:8px;cursor:pointer;background:#0b9e56;color:#fff;font-weight:800" ${Number.isFinite(Number(p.stock))&&Number(p.stock)<=0?"disabled":""}>${Number.isFinite(Number(p.stock))&&Number(p.stock)<=0?"Out of Stock":"Add to Cart"}</button></div></article>`).join('')||'<div style="grid-column:1/-1;text-align:center;padding:35px;color:#777">No products found.</div>'}
+function renderOnlineCatalog(products){
+  const grid=document.getElementById('dynamicProductGrid');
+  if(!grid)return;
+  const q=(document.getElementById('catalogSearch')?.value||'').toLowerCase().trim();
+  const cat=document.getElementById('catalogCategory')?.value||'all';
+  const list=(Array.isArray(products)?products:[]).filter(p=>{
+    const text=!q || (p.name||'').toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q);
+    return text && (cat==='all' || normalizeProductCategory(p.category)===cat);
+  });
+  grid.innerHTML=list.map(p=>{
+    const id=String(p.id||p.name||'').replace(/'/g,"\'");
+    const img=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name||'')}" style="width:100%;height:170px;object-fit:contain;border-radius:10px;background:#f7f7f7" onerror="this.style.display='none'">`:`<div style="height:170px;display:grid;place-items:center;background:#f7f7f7;border-radius:10px;font-size:52px">☀️</div>`;
+    const out=Number.isFinite(Number(p.stock))&&Number(p.stock)<=0;
+    return `<article style="border:1px solid #e8e8e8;border-radius:14px;padding:12px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.05)">${img}<div style="padding:10px 2px"><div style="font-size:12px;color:#777;text-transform:capitalize">${escapeHtml((p.category||'other').replaceAll('-',' '))}</div><h3 style="margin:5px 0 8px;font-size:17px">${escapeHtml(p.name||'')}</h3><div style="font-weight:800;font-size:18px;margin-bottom:10px">${money(p.price)}</div>${Number.isFinite(Number(p.stock))?`<div style="font-size:12px;color:${out?'#b22':'#087d47'};margin-bottom:8px">${out?'Out of stock':'Stock: '+Number(p.stock)}</div>`:''}<button onclick="addProduct('${id}')" style="width:100%;padding:10px;border:0;border-radius:8px;cursor:${out?'not-allowed':'pointer'};background:#0b9e56;color:#fff;font-weight:800" ${out?'disabled':''}>${out?'Out of Stock':'Add to Cart'}</button></div></article>`;
+  }).join('')||'<div style="grid-column:1/-1;text-align:center;padding:35px;color:#777">No products found.</div>';
+  if(typeof prices==='object')list.forEach(p=>{prices[p.id]=Number(p.price)||0;prices[p.name]=Number(p.price)||0});
+}
+
+function selectCatalogCategory(category){
+  const select=document.getElementById('catalogCategory');
+  if(select){select.value=category||'all';select.dispatchEvent(new Event('change'));}
+  const catalog=document.getElementById('dynamicCatalog');
+  if(catalog)catalog.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function goHome(){window.scrollTo({top:0,behavior:'smooth'});}
+function wireStoreNavigation(){
+  document.querySelectorAll('.nav a').forEach(a=>{
+    const text=(a.textContent||'').trim().toLowerCase();
+    if(text==='home'){a.href='javascript:void(0)';a.onclick=goHome;}
+    else if(text.includes('solar products')){a.href='javascript:void(0)';a.onclick=()=>selectCatalogCategory('solar-panels');}
+    else if(text.includes('mobile accessories')){a.href='javascript:void(0)';a.onclick=()=>selectCatalogCategory('mobile');}
+    else if(text==='electronics'){a.href='javascript:void(0)';a.onclick=()=>selectCatalogCategory('other');}
+  });
+  document.querySelectorAll('.cat .smallbtn').forEach(a=>{
+    const heading=a.closest('.cat')?.querySelector('h3')?.textContent?.toLowerCase()||'';
+    a.href='javascript:void(0)';
+    a.onclick=()=>selectCatalogCategory(heading.includes('solar')?'solar-panels':heading.includes('mobile')?'mobile':'other');
+  });
+  document.querySelectorAll('.nav .all').forEach(a=>a.onclick=()=>selectCatalogCategory('all'));
+}
+document.addEventListener('DOMContentLoaded',wireStoreNavigation);
+
 async function openSecureAdmin(){if(!fme){openAuth();showAuthMode('login');authMsg('Secure online Admin requires Supabase configuration in this V8 build.');return}if(!fmeUser){openAuth();showAuthMode('login');authMsg('Admin login required.');return}await loadFmeProfile();if(!fmeIsAdmin){openAuth();authMsg('This account is not an admin.');return}closeAuth();document.getElementById('adminOverlay').style.display='block';adminRenderSecure()}
 async function adminRenderSecure(){if(!fme)return;const {data,error}=await fme.from('products').select('*').order('created_at',{ascending:false});if(error){showToast(error.message);return}const box=document.getElementById('adminProducts');document.getElementById('adminProductCount').textContent=data.length;await renderAdminStats();document.getElementById('adminProducts').innerHTML=data.map(p=>`<div class="admin-product"><div><b>${escapeHtml(p.name)}</b><br><small>${escapeHtml(p.category)} · ${money(p.price)} · Stock: ${Number(p.stock||0)} · ${p.active?'Active':'Hidden'}</small></div><div><button onclick="secureEditProduct('${p.id}')">Edit</button><button onclick="secureDeleteProduct('${p.id}')">Delete</button></div></div>`).join('');}
 async function renderAdminStats(){
@@ -858,44 +878,6 @@ function exportReportsCSV(){
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=`faheem-sales-${from}-to-${to}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 
-
-async function openNotifications(){
-  const overlay=document.getElementById('notificationOverlay');
-  const list=document.getElementById('notificationList');
-  if(!overlay||!list)return;
-  overlay.style.display='block';
-  list.innerHTML='<p>Loading notifications…</p>';
-
-  if(!fme || !fmeUser){
-    list.innerHTML='<div class="admin-box"><b>Please login</b><br><small>Login to see your order and account notifications.</small></div>';
-    return;
-  }
-
-  try{
-    const {data,error}=await fme.from('orders')
-      .select('order_number,status,payment_status,total,updated_at,created_at')
-      .eq('user_id',fmeUser.id)
-      .order('updated_at',{ascending:false})
-      .limit(20);
-
-    if(error){
-      list.innerHTML='<div class="admin-box"><b>Notifications unavailable</b><br><small>'+escapeHtml(error.message)+'</small></div>';
-      return;
-    }
-
-    const rows=data||[];
-    list.innerHTML=rows.map(o=>`
-      <div class="admin-box" style="margin-top:10px">
-        <b>Order #${escapeHtml(o.order_number||'')}</b>
-        <span class="pill">${escapeHtml(window.fmeV15?.statusLabel(o.status)||o.status||'Update')}</span>
-        <br><small>Payment: ${escapeHtml(o.payment_status||'Pending')} · Total: ${money(o.total)}</small>
-        <br><small>${new Date(o.updated_at||o.created_at).toLocaleString('en-PK')}</small>
-      </div>`).join('') || '<div class="admin-box">No notifications yet.</div>';
-  }catch(err){
-    list.innerHTML='<div class="admin-box"><b>Notifications error</b><br><small>'+escapeHtml(err?.message||'Unknown error')+'</small></div>';
-  }
-}
-
 async function openOrderTracker(){
   if(!fmeUser){openAuth();authMsg('Please login to track your order.');return}
   document.getElementById('trackerOverlay').style.display='block';
@@ -941,9 +923,6 @@ async function customerInvoice(id){const {data,error}=await fme.from('orders').s
 async function customerWhatsAppTracking(id){const {data,error}=await fme.from('orders').select('id,order_number,status,payment_status,total,tracking_number,shipping_provider,estimated_delivery').eq('id',id).eq('user_id',fmeUser.id).single();if(error)return showToast(error.message);const wa=String(window.fmeStoreSettings?.whatsapp||'').replace(/\D/g,'');const msg=`Order ${data.order_number}\nStatus: ${window.fmeV15?.statusLabel(data.status)||data.status}\nPayment: ${data.payment_status||'Pending'}\nTracking: ${data.tracking_number||'Not assigned'}\nCourier: ${data.shipping_provider||'Not assigned'}\nETA: ${data.estimated_delivery||'To be confirmed'}`;if(wa)window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(msg),'_blank')}
 </script>
 <script>
-document.addEventListener('DOMContentLoaded',()=>{bootFme().catch(err=>{console.error('FME boot failed',err);setBackendStatus('Backend unavailable')})});
-</script>
-<script>
 /* V15 Delivery + Timeline + Notification helpers */
 window.fmeV15 = {
   deliveryStatuses: ['pending','confirmed','packed','shipped','out_for_delivery','delivered','cancelled'],
@@ -958,7 +937,6 @@ window.fmeV15 = {
   statusLabel(s) { return String(s||'').replaceAll('_',' ').replace(/\b\w/g,m=>m.toUpperCase()); }
 };
 </script>
-<script>window.fmeV20={version:"20",paymentBridge:true,webhookFailClosed:true};window.fmeV22={version:"22",secureTracking:true,whatsappOutbox:true,idempotentWebhooks:true};</script>
 </body>
 </html>
-
+<script>window.fmeV20={version:"20",paymentBridge:true,webhookFailClosed:true};window.fmeV22={version:"22",secureTracking:true,whatsappOutbox:true,idempotentWebhooks:true};</script>
