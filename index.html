@@ -311,8 +311,18 @@ document.addEventListener('DOMContentLoaded',()=>{
       card.querySelector('.pic').onclick=()=>openProduct(n);
     }
   });
-  document.getElementById('headerCart')?.addEventListener('click',openCart);
-  renderCart();
+  document.getElementById('adminOpen')?.addEventListener('click',adminOpen);
+document.getElementById('ordersOpen')?.addEventListener('click',openOrders);
+document.querySelectorAll('.card').forEach(card=>{
+  const h=card.querySelector('h3');
+  if(h){
+    const n=h.textContent;
+    card.querySelector('.pic').onclick=()=>openProduct(n);
+  }
+});
+document.getElementById('headerCart')?.addEventListener('click',openCart);
+document.getElementById('accountOpen')?.addEventListener('click',openAuth);
+renderCart();
 });
 
 const defaultAdminProducts = [
